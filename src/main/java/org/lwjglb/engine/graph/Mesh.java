@@ -31,9 +31,11 @@ public class Mesh {
             glBufferData(GL_ARRAY_BUFFER, positionsBuffer, GL_STATIC_DRAW);
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        }
 
+        try (MemoryStack stack = MemoryStack.stackPush()) {
             // Color VBO
-            vboId = glGenBuffers();
+            int vboId = glGenBuffers();
             vboIdList.add(vboId);
             FloatBuffer colorsBuffer = stack.callocFloat(colors.length);
             colorsBuffer.put(0, colors);
@@ -41,10 +43,12 @@ public class Mesh {
             glBufferData(GL_ARRAY_BUFFER, colorsBuffer, GL_STATIC_DRAW);
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+        }
 
-            // Normal VBO
-            if (!Objects.isNull(normals)) {
-                vboId = glGenBuffers();
+        // Normal VBO
+        if (!Objects.isNull(normals)) {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                int vboId = glGenBuffers();
                 vboIdList.add(vboId);
                 FloatBuffer normalsBuffer = stack.callocFloat(normals.length);
                 normalsBuffer.put(0, normals);
@@ -53,10 +57,10 @@ public class Mesh {
                 glEnableVertexAttribArray(2);
                 glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
             }
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
         }
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
     }
 
     public void cleanup() {

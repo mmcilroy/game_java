@@ -2,7 +2,6 @@ package org.lwjglb.game;
 
 import org.hjson.JsonArray;
 import org.hjson.JsonValue;
-import org.joml.Matrix3f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjglb.engine.*;
@@ -22,7 +21,7 @@ public class Main implements IAppLogic {
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
-    private Engine engine;
+    private final Engine engine;
     private Entity cubeEntity;
 
     public static void main(String[] args) {
@@ -52,7 +51,9 @@ public class Main implements IAppLogic {
     @Override
     public void init(Window window, Scene scene, Render render) {
         loadConfig("resources/config/config.json");
-        Mesh mesh = loadMesh("resources/config/cube.json");
+
+        //Mesh mesh = loadMesh("resources/config/cube.json");
+        Mesh mesh = ObjLoader.load("resources/models/suzanne.obj");
 
         String cubeModelId = "cube-model";
         Model model = new Model(cubeModelId, List.of(mesh));
