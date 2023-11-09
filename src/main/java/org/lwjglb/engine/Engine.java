@@ -1,34 +1,29 @@
 package org.lwjglb.engine;
 
 import org.lwjglb.engine.graph.Render;
+import org.lwjglb.engine.scene.Camera;
 import org.lwjglb.engine.scene.Scene;
 
 public class Engine {
 
     public static final int TARGET_UPS = 30;
-    private final IAppLogic appLogic;
-    private final Window window;
+    private IAppLogic appLogic;
+    private Window window;
     private Render render;
     private boolean running;
+    private boolean restart;
     private Scene scene;
-    private int targetFps;
-    private int targetUps;
+    private final String windowTitle;
+    private final Window.WindowOptions opts;
 
     public Engine(String windowTitle, Window.WindowOptions opts, IAppLogic appLogic) {
-        window = new Window(windowTitle, opts, () -> {
-            resize();
-            return null;
-        });
-        targetFps = opts.fps;
-        targetUps = opts.ups;
+        this.windowTitle = windowTitle;
+        this.opts = opts;
         this.appLogic = appLogic;
-        render = new Render();
-        scene = new Scene(window.getWidth(), window.getHeight());
-        appLogic.init(window, scene, render);
-        running = true;
     }
 
     private void cleanup() {
+        System.out.println("Cleanup");
         appLogic.cleanup();
         render.cleanup();
         scene.cleanup();
@@ -40,9 +35,19 @@ public class Engine {
     }
 
     private void run() {
+        window = new Window(windowTitle, opts, () -> {
+            resize();
+            return null;
+        });
+
+        render = new Render();
+        scene = new Scene(window.getWidth(), window.getHeight());
+        appLogic.init(window, scene, render);
+        running = true;
+
         long initialTime = System.currentTimeMillis();
-        float timeU = 1000.0f / targetUps;
-        float timeR = targetFps > 0 ? 1000.0f / targetFps : 0;
+        float timeU = 1000.0f / opts.ups;
+        float timeR = opts.fps > 0 ? 1000.0f / opts.fps : 0;
         float deltaUpdate = 0;
         float deltaFps = 0;
 
@@ -54,7 +59,7 @@ public class Engine {
             deltaUpdate += (now - initialTime) / timeU;
             deltaFps += (now - initialTime) / timeR;
 
-            if (targetFps <= 0 || deltaFps >= 1) {
+            if (opts.fps <= 0 || deltaFps >= 1) {
                 window.getMouseInput().input();
                 appLogic.input(window, scene, now - initialTime);
             }
@@ -66,7 +71,7 @@ public class Engine {
                 deltaUpdate--;
             }
 
-            if (targetFps <= 0 || deltaFps >= 1) {
+            if (opts.fps <= 0 || deltaFps >= 1) {
                 render.render(window, scene);
                 deltaFps--;
                 window.update();
@@ -78,12 +83,33 @@ public class Engine {
     }
 
     public void start() {
+        System.out.println("Start");
         running = true;
+        restart = false;
         run();
     }
 
     public void stop() {
+        System.out.println("Stop");
         running = false;
+        restart = false;
     }
 
+    public void restart() {
+        System.out.println("Restart");
+        running = false;
+        restart = true;
+    }
+
+    public boolean shouldRestart() {
+        return restart;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    public Render getRender() {
+        return render;
+    }
 }

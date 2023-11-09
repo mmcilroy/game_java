@@ -1,6 +1,9 @@
 package org.lwjglb.engine.graph;
 
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjglb.engine.scene.*;
+import org.lwjglb.game.Config;
 
 import java.util.*;
 
@@ -9,6 +12,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class SceneRender {
 
     private ShaderProgram shaderProgram;
+
     private UniformsMap uniformsMap;
 
     public SceneRender() {
@@ -28,6 +32,10 @@ public class SceneRender {
         uniformsMap.createUniform("projectionMatrix");
         uniformsMap.createUniform("viewMatrix");
         uniformsMap.createUniform("modelMatrix");
+
+        uniformsMap.createUniform("lightDirection");
+        uniformsMap.createUniform("lightColour");
+        uniformsMap.createUniform("lightBias");
     }
 
     public void render(Scene scene) {
@@ -36,6 +44,10 @@ public class SceneRender {
         uniformsMap.setUniform("projectionMatrix", scene.getProjection().getProjMatrix());
         uniformsMap.setUniform("viewMatrix", scene.getCamera().getViewMatrix());
 
+        uniformsMap.setUniform("lightDirection", Config.lightDirection);
+        uniformsMap.setUniform("lightColour", Config.lightColour);
+        uniformsMap.setUniform("lightBias", Config.lightBias);
+
         Collection<Model> models = scene.getModelMap().values();
         for (Model model : models) {
             model.getMeshList().stream().forEach(mesh -> {
@@ -43,7 +55,7 @@ public class SceneRender {
                 List<Entity> entities = model.getEntitiesList();
                 for (Entity entity : entities) {
                     uniformsMap.setUniform("modelMatrix", entity.getModelMatrix());
-                    glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
+                    glDrawArrays(GL_TRIANGLES, 0, mesh.getNumVertices());
                 }
             });
         }

@@ -1,0 +1,11 @@
+{
+  camera: {
+    position: [2.0, 1.5, 2.0],
+    rotation: [0.4, -0.8]
+  },
+  uniforms: {
+    lightDirection: [0.0, 1.0, 0.0],
+    lightColour: [1.0, 1.0, 1.0],
+    lightBias: [0.4, 0.8],
+  }
+}

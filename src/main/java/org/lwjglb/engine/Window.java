@@ -14,10 +14,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
 
     private final long windowHandle;
-    private int height;
     private MouseInput mouseInput;
     private Callable<Void> resizeFunc;
     private int width;
+    private int height;
 
     public Window(String title, WindowOptions opts, Callable<Void> resizeFunc) {
         this.resizeFunc = resizeFunc;
