@@ -5,7 +5,8 @@
   },
   uniforms: {
     lightDirection: [0.0, -1.0, -1.0],
-    lightColour: [0.5, 0.5, 1.0],
-    lightBias: [0.4, 0.8],
-  }
+    lightColour: [0.91, 0.91, 0.65],
+    lightBias: [0.9, 0.6]
+  },
+  clearColor: [0.37, 0.67, 0.89],
 }

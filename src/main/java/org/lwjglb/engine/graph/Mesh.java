@@ -2,6 +2,7 @@ package org.lwjglb.engine.graph;
 
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.*;
 import java.util.*;
@@ -25,24 +26,26 @@ public class Mesh {
             // Positions VBO
             int vboId = glGenBuffers();
             vboIdList.add(vboId);
-            FloatBuffer positionsBuffer = stack.callocFloat(vertices.length);
-            positionsBuffer.put(0, vertices);
+            FloatBuffer verticesBuffer = MemoryUtil.memCallocFloat(vertices.length); //stack.callocFloat(vertices.length);
+            verticesBuffer.put(0, vertices);
             glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, positionsBuffer, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+            MemoryUtil.memFree(verticesBuffer);
         }
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             // Color VBO
             int vboId = glGenBuffers();
             vboIdList.add(vboId);
-            FloatBuffer colorsBuffer = stack.callocFloat(colors.length);
+            FloatBuffer colorsBuffer = MemoryUtil.memCallocFloat(colors.length);
             colorsBuffer.put(0, colors);
             glBindBuffer(GL_ARRAY_BUFFER, vboId);
             glBufferData(GL_ARRAY_BUFFER, colorsBuffer, GL_STATIC_DRAW);
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+            MemoryUtil.memFree(colorsBuffer);
         }
 
         // Normal VBO
@@ -50,12 +53,13 @@ public class Mesh {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 int vboId = glGenBuffers();
                 vboIdList.add(vboId);
-                FloatBuffer normalsBuffer = stack.callocFloat(normals.length);
+                FloatBuffer normalsBuffer = MemoryUtil.memCallocFloat(normals.length);
                 normalsBuffer.put(0, normals);
                 glBindBuffer(GL_ARRAY_BUFFER, vboId);
                 glBufferData(GL_ARRAY_BUFFER, normalsBuffer, GL_STATIC_DRAW);
                 glEnableVertexAttribArray(2);
                 glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+                MemoryUtil.memFree(normalsBuffer);
             }
         }
 

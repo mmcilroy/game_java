@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.lwjglb.engine.Utils;
 import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.Model;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -22,7 +22,6 @@ public class Main implements IAppLogic {
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
     private final Engine engine;
-    private Entity cubeEntity;
 
     public static void main(String[] args) {
         new Main();
@@ -31,8 +30,8 @@ public class Main implements IAppLogic {
     private Main() {
         // Todo Make this part of config
         var windowOptions = new Window.WindowOptions();
-        windowOptions.width = 800;
-        windowOptions.height = 600;
+        windowOptions.width = 1200;
+        windowOptions.height = 900;
 
         engine = new Engine("game", windowOptions, this);
         engine.start();
@@ -52,18 +51,29 @@ public class Main implements IAppLogic {
     public void init(Window window, Scene scene, Render render) {
         loadConfig("resources/config/config.json");
 
-        //Mesh mesh = loadMesh("resources/config/cube.json");
-        Mesh mesh = ObjLoader.load("resources/models/suzanne.obj");
+        Mesh mesh = loadMesh("resources/config/cube.json");
+        //Mesh mesh = ObjLoader.load("resources/models/stanford-bunny.obj");
+        //Mesh mesh = ObjLoader.load("resources/models/suzanne.obj");
 
         String cubeModelId = "cube-model";
         Model model = new Model(cubeModelId, List.of(mesh));
         scene.addModel(model);
 
-        cubeEntity = new Entity("cube-entity", cubeModelId);
+        Entity cubeEntity = new Entity("cube-entity", cubeModelId);
         cubeEntity.setPosition(0, 0, 0);
         cubeEntity.updateModelMatrix();
 
-        scene.addEntity(cubeEntity);
+        scene.addEntity(genCubeEntity("1", cubeModelId, new Vector3f(0, 0, 0)));
+        scene.addEntity(genCubeEntity("2", cubeModelId, new Vector3f(1, 0, 0)));
+        scene.addEntity(genCubeEntity("3", cubeModelId, new Vector3f(1, 1, 0)));
+        scene.addEntity(genCubeEntity("4", cubeModelId, new Vector3f(1, 0, 1)));
+    }
+
+    private Entity genCubeEntity(String id, String model, Vector3f pos) {
+        Entity cubeEntity = new Entity("cube-entity-" + id, model);
+        cubeEntity.setPosition(pos.x, pos.y, pos.z);
+        cubeEntity.updateModelMatrix();
+        return cubeEntity;
     }
 
     @Override
@@ -89,20 +99,16 @@ public class Main implements IAppLogic {
             camera.moveDown(move);
         }
 
+        if (window.isKeyPressed(GLFW_KEY_Q)) {
+            camera.addRotation(0.0f, -0.05f);
+        } else if (window.isKeyPressed(GLFW_KEY_E)) {
+            camera.addRotation(0.0f, 0.05f);
+        }
+
         if (window.isKeyPressed(GLFW_KEY_SPACE)) {
             camera.moveUp(move);
         } else if (window.isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
             camera.moveDown(move);
-        }
-
-        if (window.isKeyPressed(GLFW_KEY_Q)) {
-            var p = cubeEntity.getPosition();
-            cubeEntity.setPosition(p.x, p.y, p.z - 0.1f);
-            cubeEntity.updateModelMatrix();
-        } else if (window.isKeyPressed(GLFW_KEY_E)) {
-            var p = cubeEntity.getPosition();
-            cubeEntity.setPosition(p.x, p.y, p.z + 0.1f);
-            cubeEntity.updateModelMatrix();
         }
 
         if (window.isKeyPressed(GLFW_KEY_F5)) {
@@ -138,6 +144,9 @@ public class Main implements IAppLogic {
         Config.lightDirection = new Vector3f(lightDirection[0], lightDirection[1], lightDirection[2]);
         Config.lightColour = new Vector3f(lightColour[0], lightColour[1], lightColour[2]);
         Config.lightBias = new Vector2f(lightBias[0], lightBias[1]);
+
+        var clearColor = readJsonFloatArray(json.get("clearColor").asArray());
+        Config.clearColor = new Vector3f(clearColor[0], clearColor[1], clearColor[2]);
     }
 
     private Mesh loadMesh(String filename) {

@@ -24,8 +24,8 @@ void main()
 {
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 
-    outColor = color;
-
     vec3 lighting = calculateLighting();
     outColor = color * lighting;
+
+    //outColor = color;
 }
